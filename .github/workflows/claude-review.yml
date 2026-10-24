@@ -1,0 +1,19 @@
+# AI レビュー（手順4で有効化）。ANTHROPIC_API_KEY を Actions secret に登録するまで動かない。
+# 注意: fork 由来 PR では secret が渡らない。入力（PR本文）は信頼しない前提で権限を最小に保つ。
+name: claude-review
+on:
+  pull_request:
+    types: [opened, synchronize]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    if: ${{ vars.ENABLE_AI_REVIEW == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: "この PR をレビューし、バグ・セキュリティ・テスト不足を指摘してください。承認はしないこと。"

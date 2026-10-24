@@ -1,0 +1,6 @@
+# 練習時は REVIEWER_ACCOUNT を実際のレビュー担当アカウント名に置換する
+*                       @REVIEWER_ACCOUNT
+/.claude/               @ADMIN_ACCOUNT
+/.github/               @ADMIN_ACCOUNT
+/AGENTS.md              @ADMIN_ACCOUNT
+/.mcp.json              @ADMIN_ACCOUNT

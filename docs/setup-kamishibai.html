@@ -259,6 +259,90 @@ gh auth status</pre>
 <div class="box t">最初は <b>public</b> が無難です。無料 Org の private ではブランチ保護の一部が使えない場合があります。公開は外部への発信なので、実行前にあなたの「はい」を待ちます。</div></div>
 </section>
 
+<!-- G1 置き場3つ -->
+<section class="slide">
+<span class="tag">しくみ①</span>
+<h2>ファイルの「置き場」は3つあります</h2>
+<svg viewBox="0 0 780 270" role="img" aria-label="作業フォルダ、PC の履歴、GitHub の3つの置き場">
+<defs><marker id="ar1" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto"><path d="M0 0 L14 7 L0 14z" fill="var(--ac)"/></marker><marker id="ar2" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto"><path d="M0 0 L14 7 L0 14z" fill="var(--ok)"/></marker></defs>
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-line" x="14" y="30" width="200" height="150" rx="14" stroke-width="2.5"/><text x="114" y="64" font-size="26">📝</text><text x="114" y="94" font-weight="700" class="t-fg">① 作業フォルダ</text><text x="114" y="116" font-size="12" class="t-sub">ファイルを実際に</text><text x="114" y="134" font-size="12" class="t-sub">編集する場所</text><text x="114" y="164" font-size="11" class="t-ac">あなたの PC</text>
+<rect class="f-card s-line" x="290" y="30" width="200" height="150" rx="14" stroke-width="2.5"/><text x="390" y="64" font-size="26">📚</text><text x="390" y="94" font-weight="700" class="t-fg">② PC の履歴</text><text x="390" y="116" font-size="12" class="t-sub">「ここまで保存」の</text><text x="390" y="134" font-size="12" class="t-sub">記録（コミット）</text><text x="390" y="164" font-size="11" class="t-ac">あなたの PC（.git）</text>
+<rect class="f-card s-ok" x="566" y="30" width="200" height="150" rx="14" stroke-width="3"/><text x="666" y="64" font-size="26">☁️</text><text x="666" y="94" font-weight="700" class="t-fg">③ GitHub</text><text x="666" y="116" font-size="12" class="t-sub">みんなが見る</text><text x="666" y="134" font-size="12" class="t-sub">「正本」の場所</text><text x="666" y="164" font-size="11" class="t-ok" font-weight="700">y2k-practice/…</text>
+</g>
+<path d="M220 80 H282" stroke="var(--ac)" stroke-width="4" fill="none" marker-end="url(#ar1)"/><text x="251" y="66" text-anchor="middle" font-size="12" font-weight="700" class="t-ac">commit</text>
+<path d="M496 80 H558" stroke="var(--ok)" stroke-width="4" fill="none" marker-end="url(#ar2)"/><text x="527" y="66" text-anchor="middle" font-size="12" font-weight="700" class="t-ok">push</text>
+<path d="M560 130 H498" stroke="var(--ac)" stroke-width="4" fill="none" marker-end="url(#ar1)"/><text x="529" y="152" text-anchor="middle" font-size="12" font-weight="700" class="t-ac">pull</text>
+<rect class="f-chip" x="14" y="204" width="752" height="52" rx="10"/>
+<text x="390" y="226" text-anchor="middle" font-size="13" class="t-fg"><tspan font-weight="700">commit</tspan> = PC の中で記録　／　<tspan font-weight="700">push</tspan> = PC → GitHub へ送る　／　<tspan font-weight="700">pull</tspan> = GitHub → PC へ取り込む</text>
+<text x="390" y="246" text-anchor="middle" font-size="12" class="t-sub">今回、この PC で pull はまだ一度もしていません。push しただけです。</text>
+</svg>
+</section>
+
+<!-- G2 ブランチ -->
+<section class="slide">
+<span class="tag">しくみ②</span>
+<h2>ブランチ＝「main を汚さない作業台」</h2>
+<svg viewBox="0 0 780 240" role="img" aria-label="main から枝分かれして戻る図">
+<g text-anchor="middle" font-size="13">
+<line x1="30" y1="60" x2="750" y2="60" class="s-ok" stroke-width="6" stroke-linecap="round"/>
+<circle cx="90" cy="60" r="12" class="f-ok"/><circle cx="210" cy="60" r="12" class="f-ok"/><circle cx="600" cy="60" r="12" class="f-ok"/><circle cx="710" cy="60" r="16" class="f-ok" stroke="#fff" stroke-width="3"/>
+<text x="80" y="34" font-weight="700" class="t-ok">main（正本）</text>
+<path d="M210 60 C 250 60 260 160 320 160" fill="none" class="s-ac" stroke-width="5"/>
+<line x1="320" y1="160" x2="500" y2="160" class="s-ac" stroke-width="5"/>
+<path d="M500 160 C 570 160 560 60 600 60" fill="none" class="s-ac" stroke-width="5"/>
+<circle cx="350" cy="160" r="11" class="f-ac"/><circle cx="410" cy="160" r="11" class="f-ac"/><circle cx="470" cy="160" r="11" class="f-ac"/>
+<text x="410" y="200" font-weight="700" class="t-ac">fix/secret-scan-license（作業用ブランチ）</text>
+<text x="410" y="220" font-size="12" class="t-sub">ここで直して、CI で確かめる</text>
+<text x="190" y="112" font-size="12" class="t-sub">枝分かれ</text>
+<text x="640" y="108" font-size="12" font-weight="700" class="t-ac">merge（取り込み）</text>
+<text x="710" y="92" font-size="12" font-weight="700" class="t-ok">直った main</text>
+</g></svg>
+<ul><li>失敗しても、<b>main は無傷</b>です。ダメなら枝ごと捨てられます。</li>
+<li>枝を main に戻すための「お願い」と「確認」の場が、<b>Pull Request</b> です。</li></ul>
+</section>
+
+<!-- G3 PRの一生 -->
+<section class="slide">
+<span class="tag">しくみ③</span>
+<h2>Pull Request の一生</h2>
+<svg viewBox="0 0 800 250" role="img" aria-label="PR が出てからマージされるまで">
+<defs><marker id="ar3" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto"><path d="M0 0 L14 7 L0 14z" fill="var(--fg)"/></marker></defs>
+<g text-anchor="middle" font-size="13">
+<g transform="translate(6,20)"><rect class="f-card s-ok" width="140" height="150" rx="12" stroke-width="2.5"/><text x="70" y="40" font-size="24">🛠️</text><text x="70" y="70" font-weight="700" class="t-fg">① 作業</text><text x="70" y="92" font-size="11" class="t-sub">枝で直して</text><text x="70" y="108" font-size="11" class="t-sub">push する</text><text x="70" y="136" font-size="11" class="t-ok" font-weight="700">Claude</text></g>
+<g transform="translate(166,20)"><rect class="f-card s-ac" width="140" height="150" rx="12" stroke-width="2.5"/><text x="70" y="40" font-size="24">📨</text><text x="70" y="70" font-weight="700" class="t-fg">② PR を出す</text><text x="70" y="92" font-size="11" class="t-sub">目的・変更点・</text><text x="70" y="108" font-size="11" class="t-sub">確認を書く</text><text x="70" y="136" font-size="11" class="t-ok" font-weight="700">Claude</text></g>
+<g transform="translate(326,20)"><rect class="f-card s-ac" width="140" height="150" rx="12" stroke-width="2.5"/><text x="70" y="40" font-size="24">🤖</text><text x="70" y="70" font-weight="700" class="t-fg">③ CI が自動確認</text><text x="70" y="92" font-size="11" class="t-sub">test と</text><text x="70" y="108" font-size="11" class="t-sub">secret-scan</text><text x="70" y="136" font-size="11" class="t-ac" font-weight="700">GitHub Actions</text></g>
+<g transform="translate(486,20)"><rect class="f-card s-ng" width="140" height="150" rx="12" stroke-width="2.5"/><text x="70" y="40" font-size="24">👀</text><text x="70" y="70" font-weight="700" class="t-fg">④ 人が読む</text><text x="70" y="92" font-size="11" class="t-sub">内容を確認し</text><text x="70" y="108" font-size="11" class="t-sub">承認する</text><text x="70" y="136" font-size="11" class="t-ng" font-weight="700">reviewer</text></g>
+<g transform="translate(646,20)"><rect class="f-ok" width="140" height="150" rx="12"/><text x="70" y="40" font-size="24">✅</text><text x="70" y="70" font-weight="700" class="t-w">⑤ merge</text><text x="70" y="92" font-size="11" class="t-w">main に</text><text x="70" y="108" font-size="11" class="t-w">取り込む</text><text x="70" y="136" font-size="11" class="t-w" font-weight="700">承認後に</text></g>
+</g>
+<g stroke="var(--fg)" stroke-width="3" fill="none"><path d="M150 95 H162" marker-end="url(#ar3)"/><path d="M310 95 H322" marker-end="url(#ar3)"/><path d="M470 95 H482" marker-end="url(#ar3)"/><path d="M630 95 H642" marker-end="url(#ar3)"/></g>
+<rect class="f-chip" x="6" y="196" width="780" height="44" rx="10"/><text x="396" y="224" text-anchor="middle" font-size="13" class="t-fg">③ が赤なら ⑤ に進めません。④ の承認が無くても進めません。これが「仕組みで止める」です。</text>
+</svg>
+</section>
+
+<!-- G4 今回のPR#1 -->
+<section class="slide">
+<span class="tag">実例</span>
+<h2>いま起きていること（PR #1）</h2>
+<svg viewBox="0 0 780 230" role="img" aria-label="PR 1 のできごとの時系列">
+<g text-anchor="middle" font-size="12.5">
+<line x1="40" y1="80" x2="740" y2="80" class="s-line" stroke-width="5"/>
+<g><circle cx="70" cy="80" r="16" class="f-ac"/><text x="70" y="86" class="t-w" font-weight="700">1</text><text x="70" y="40" font-weight="700" class="t-fg">push</text><text x="70" y="120" class="t-sub">main を GitHub へ</text></g>
+<g><circle cx="215" cy="80" r="16" class="f-ng"/><text x="215" y="86" class="t-w" font-weight="700">2</text><text x="215" y="40" font-weight="700" class="t-ng">CI 失敗</text><text x="215" y="120" class="t-sub">secret-scan が</text><text x="215" y="136" class="t-sub">ライセンス要求</text></g>
+<g><circle cx="360" cy="80" r="16" class="f-ac"/><text x="360" y="86" class="t-w" font-weight="700">3</text><text x="360" y="40" font-weight="700" class="t-fg">ブランチで修正</text><text x="360" y="120" class="t-sub">fix/secret-scan-</text><text x="360" y="136" class="t-sub">license</text></g>
+<g><circle cx="505" cy="80" r="16" class="f-ac"/><text x="505" y="86" class="t-w" font-weight="700">4</text><text x="505" y="40" font-weight="700" class="t-fg">PR #1 を作成</text><text x="505" y="120" class="t-sub">「main に取り込んで」</text></g>
+<g><circle cx="650" cy="80" r="16" class="f-ok"/><text x="650" y="86" class="t-w" font-weight="700">5</text><text x="650" y="40" font-weight="700" class="t-ok">CI 成功</text><text x="650" y="120" class="t-sub">test ✓ secret-scan ✓</text></g>
+</g>
+<g transform="translate(560,160)"><rect class="f-bg s-ng" width="200" height="56" rx="10" stroke-width="2.5" stroke-dasharray="6 5"/><text x="100" y="26" text-anchor="middle" font-size="13" font-weight="700" class="t-ng">▶ いまここ：merge 待ち</text><text x="100" y="45" text-anchor="middle" font-size="11" class="t-sub">あなたの判断を待っています</text></g>
+</svg>
+<table><tr><th>用語</th><th>ひとこと</th></tr>
+<tr><td>commit</td><td>PC の中で変更を記録する</td></tr>
+<tr><td>push / pull</td><td>PC → GitHub に送る ／ GitHub → PC に取り込む</td></tr>
+<tr><td>branch</td><td>main を汚さない作業台</td></tr>
+<tr><td>Pull Request</td><td>「この枝を main に取り込んで」という GitHub 上の依頼</td></tr>
+<tr><td>merge</td><td>承認後に、実際に main へ取り込むこと</td></tr></table>
+</section>
+
 <!-- 12 CODEOWNERS -->
 <section class="slide">
 <span class="tag">場面5</span>

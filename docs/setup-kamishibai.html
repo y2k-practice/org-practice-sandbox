@@ -535,6 +535,165 @@ git push -u origin fix/secret-scan-license  # 枝を GitHub に送る</pre>
 <div class="box">この表が頭に入れば、Git の基本はひと通り押さえられています。</div>
 </section>
 
+<!-- CI1 CIとは -->
+<section class="slide">
+<span class="tag">CI 編 ①</span>
+<h2>CI ＝ 変更のたびに、機械が自動で検査する</h2>
+<svg viewBox="0 0 780 262" role="img" aria-label="PR を出すと CI が自動検査し、合格か不合格かを返す図">
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-ok" x="10" y="60" width="150" height="110" rx="14" stroke-width="2.5"/><text x="85" y="96" font-size="26">📨</text><text x="85" y="124" font-weight="700" class="t-fg">PR を出す</text><text x="85" y="144" font-size="11" class="t-sub">push する</text>
+<path d="M164 115 H212" stroke="var(--fg)" stroke-width="3" fill="none" marker-end="url(#mF)"/>
+<rect class="f-card s-ac" x="218" y="30" width="270" height="170" rx="14" stroke-width="3"/><text x="353" y="58" font-size="14" font-weight="700" class="t-ac">🤖 CI（GitHub Actions）</text>
+<rect class="f-bg" x="238" y="72" width="230" height="30" rx="8"/><text x="353" y="92" class="t-fg">① test　テストを実行</text>
+<rect class="f-bg" x="238" y="110" width="230" height="30" rx="8"/><text x="353" y="130" class="t-fg">② secret-scan　秘密情報を検索</text>
+<rect class="f-bg" x="238" y="148" width="230" height="30" rx="8"/><text x="353" y="168" class="t-sub">③ review　AI レビュー（未設定）</text>
+<path d="M492 100 L548 70" stroke="var(--ok)" stroke-width="3" fill="none" marker-end="url(#mG)"/><path d="M492 130 L548 165" stroke="var(--ng)" stroke-width="3" fill="none" marker-end="url(#mR)"/>
+<rect class="f-ok" x="554" y="34" width="216" height="64" rx="12"/><text x="662" y="62" font-size="20" class="t-w">✅ 合格（緑）</text><text x="662" y="84" font-size="12" class="t-w">merge に進める</text>
+<rect class="f-ng" x="554" y="134" width="216" height="64" rx="12"/><text x="662" y="162" font-size="20" class="t-w">❌ 不合格（赤）</text><text x="662" y="184" font-size="12" class="t-w">直して push し直す</text>
+</g>
+<path d="M662 200 C 662 238 85 238 85 176" stroke="var(--ng)" stroke-width="2.5" fill="none" stroke-dasharray="6 5" marker-end="url(#mR)"/><text x="380" y="254" text-anchor="middle" font-size="11" class="t-ng" font-weight="700">直したら、また自動で検査される</text>
+</svg>
+<ul><li>CI は <b>Continuous Integration（継続的インテグレーション）</b>の略。<b>人が毎回やると忘れる確認</b>を、機械に任せる仕組みです。</li>
+<li>検査するのは<b>人ではなく手順</b>なので、誰が出した PR でも、AI が書いた PR でも、同じ基準で確認されます。</li></ul>
+</section>
+
+<!-- CI2 このリポジトリの構成 -->
+<section class="slide">
+<span class="tag">CI 編 ②</span>
+<h2>このリポジトリの CI は、いつ・何を動かすか</h2>
+<svg viewBox="0 0 780 260" role="img" aria-label="トリガーと3つのジョブの構成図">
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-line" x="10" y="40" width="190" height="150" rx="14" stroke-width="2.5"/><text x="105" y="70" font-size="14" font-weight="700" class="t-fg">いつ動く？</text><text x="105" y="98" font-size="12" class="t-fg">① PR を出した／更新した</text><text x="105" y="120" font-size="12" class="t-fg">② main に変更が入った</text><text x="105" y="152" font-size="11" class="t-sub">on: pull_request</text><text x="105" y="168" font-size="11" class="t-sub">on: push (main)</text>
+<path d="M206 115 H262" stroke="var(--fg)" stroke-width="3" fill="none" marker-end="url(#mF)"/>
+<text x="400" y="26" font-size="13" font-weight="700" class="t-ac">並行して動く3つのジョブ（作業単位）</text>
+<g transform="translate(268,40)"><rect class="f-card s-ok" width="270" height="44" rx="10" stroke-width="2.5"/><text x="135" y="19" font-weight="700" class="t-fg">test</text><text x="135" y="36" font-size="11" class="t-sub">npm test でテストを実行</text></g>
+<g transform="translate(268,96)"><rect class="f-card s-ok" width="270" height="44" rx="10" stroke-width="2.5"/><text x="135" y="19" font-weight="700" class="t-fg">secret-scan</text><text x="135" y="36" font-size="11" class="t-sub">gitleaks で鍵・トークンを検出</text></g>
+<g transform="translate(268,152)"><rect class="f-bg s-line" width="270" height="44" rx="10" stroke-width="2" stroke-dasharray="6 5"/><text x="135" y="19" font-weight="700" class="t-sub">review（AI レビュー）</text><text x="135" y="36" font-size="11" class="t-sub">変数 ENABLE_AI_REVIEW が true の時だけ</text></g>
+<path d="M544 62 H600" stroke="var(--ok)" stroke-width="3" fill="none" marker-end="url(#mG)"/><path d="M544 118 H600" stroke="var(--ok)" stroke-width="3" fill="none" marker-end="url(#mG)"/><path d="M544 174 H600" stroke="var(--sub)" stroke-width="3" fill="none" stroke-dasharray="5 4"/>
+<rect class="f-card s-ok" x="606" y="40" width="164" height="156" rx="14" stroke-width="2.5"/><text x="688" y="76" font-size="13" font-weight="700" class="t-fg">PR の画面に</text><text x="688" y="96" font-size="13" font-weight="700" class="t-fg">結果が並ぶ</text><text x="688" y="126" font-size="12" class="t-ok" font-weight="700">✓ test</text><text x="688" y="146" font-size="12" class="t-ok" font-weight="700">✓ secret-scan</text><text x="688" y="166" font-size="12" class="t-sub">− review（skip）</text>
+</g>
+<rect class="f-chip" x="10" y="214" width="760" height="36" rx="10"/><text x="390" y="237" text-anchor="middle" font-size="12.5" class="t-fg">ファイルの場所: <tspan font-family="Consolas,monospace" font-weight="700">.github/workflows/ci.yml</tspan>　（AI レビューは claude-review.yml）</text>
+</svg>
+<p class="sub">「review」が skipped（スキップ）なのは、設定していないだけで、エラーではありません。</p>
+</section>
+
+<!-- CI3 ymlの読み方 -->
+<section class="slide">
+<span class="tag">CI 編 ③</span>
+<h2>ci.yml は、こう読みます</h2>
+<div class="cols"><div>
+<pre>name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm test</pre>
+</div>
+<ul>
+<li><b>on</b>: 動くきっかけ（PR、main への変更）。</li>
+<li><b>permissions</b>: CI に与える権限。<b>読むだけ</b>に絞っています（最小権限）。</li>
+<li><b>jobs</b>: 作業のまとまり。<code>test</code> と <code>secret-scan</code> は<b>並行</b>して動きます。</li>
+<li><b>runs-on</b>: 使う作業用パソコン（GitHub が用意）。</li>
+<li><b>steps</b>: 上から順に実行する手順。</li>
+</ul></div>
+<svg viewBox="0 0 780 130" role="img" aria-label="ジョブの中の手順の流れ">
+<g text-anchor="middle" font-size="12.5">
+<rect class="f-card s-ac" x="6" y="16" width="170" height="80" rx="12" stroke-width="2"/><text x="91" y="44" font-size="20">🖥️</text><text x="91" y="68" font-weight="700" class="t-fg">使い捨てのパソコン</text><text x="91" y="86" font-size="11" class="t-sub">ubuntu-latest を借りる</text>
+<rect class="f-card s-line" x="206" y="16" width="150" height="80" rx="12" stroke-width="2"/><text x="281" y="44" font-size="20">📥</text><text x="281" y="68" font-weight="700" class="t-fg">checkout</text><text x="281" y="86" font-size="11" class="t-sub">コードを取得</text>
+<rect class="f-card s-line" x="386" y="16" width="150" height="80" rx="12" stroke-width="2"/><text x="461" y="44" font-size="20">🧱</text><text x="461" y="68" font-weight="700" class="t-fg">setup-node</text><text x="461" y="86" font-size="11" class="t-sub">Node 22 を用意</text>
+<rect class="f-card s-line" x="566" y="16" width="120" height="80" rx="12" stroke-width="2"/><text x="626" y="44" font-size="20">🧪</text><text x="626" y="68" font-weight="700" class="t-fg">npm test</text><text x="626" y="86" font-size="11" class="t-sub">テスト実行</text>
+<rect class="f-bg s-line" x="702" y="16" width="72" height="80" rx="12" stroke-width="2" stroke-dasharray="5 4"/><text x="738" y="44" font-size="20">🗑️</text><text x="738" y="68" font-weight="700" class="t-sub">破棄</text><text x="738" y="86" font-size="11" class="t-sub">終わると消える</text>
+</g>
+<g stroke="var(--fg)" stroke-width="2.5" fill="none"><path d="M180 56 H202" marker-end="url(#mF)"/><path d="M360 56 H382" marker-end="url(#mF)"/><path d="M540 56 H562" marker-end="url(#mF)"/><path d="M690 56 H698" marker-end="url(#mF)"/></g>
+<text x="390" y="122" text-anchor="middle" font-size="12" class="t-sub">毎回まっさらな環境で動くので、「自分の PC では動く」が通用しません。</text>
+</svg>
+</section>
+
+<!-- CI4 実例 -->
+<section class="slide">
+<span class="tag">CI 編 ④</span>
+<h2>実例：最初の CI は、わざとではなく赤くなりました</h2>
+<svg viewBox="0 0 780 250" role="img" aria-label="Actions の実行履歴と失敗ログ">
+<rect class="f-card s-line" x="6" y="6" width="768" height="236" rx="12" stroke-width="2"/>
+<text x="22" y="32" font-size="13" font-weight="700" class="t-fg">Actions（実行の履歴）</text>
+<g font-size="12.5">
+<rect class="f-ngbg" x="18" y="44" width="744" height="34" rx="8" style="fill:var(--ngbg)"/><text x="32" y="66" class="t-ng" font-weight="700">✗</text><text x="54" y="66" class="t-fg">ci　Add setup kamishibai and switch to …</text><text x="560" y="66" class="t-sub">main へ push　10 秒</text><text x="690" y="66" class="t-ng" font-weight="700">失敗</text>
+<rect x="18" y="84" width="744" height="34" rx="8" style="fill:var(--okbg)"/><text x="32" y="106" class="t-ok" font-weight="700">✓</text><text x="54" y="106" class="t-fg">ci　Fix secret-scan: run gitleaks CLI … (PR #1)</text><text x="560" y="106" class="t-sub">PR の更新</text><text x="690" y="106" class="t-ok" font-weight="700">成功</text>
+<rect x="18" y="124" width="744" height="34" rx="8" style="fill:var(--okbg)"/><text x="32" y="146" class="t-ok" font-weight="700">✓</text><text x="54" y="146" class="t-fg">ci　Merge main into docs/kamishibai-git-basics (PR #2)</text><text x="560" y="146" class="t-sub">PR の更新</text><text x="690" y="146" class="t-ok" font-weight="700">成功</text></g>
+<rect class="f-term" x="18" y="170" width="744" height="62" rx="8"/><g font-family="Consolas,monospace" font-size="12"><text x="30" y="192" fill="#9aa4b2">secret-scan ▸ Run gitleaks/gitleaks-action@v2</text><text x="30" y="212" fill="#f87171">[y2k-practice] is an organization. License key is required.</text><text x="30" y="228" fill="#f87171">##[error] missing gitleaks license …</text></g>
+</svg>
+<div class="cols"><div><p><b>原因</b>: 使っていた部品が、<b>Organization では有料ライセンス</b>を要求しました。コードの誤りではありません。</p>
+<p><b>対処</b>: 無料のコマンド版を直接実行する形に変更（PR #1）。</p></div>
+<div><p><b>ログの探し方</b></p><ol><li>PR の <b>Checks</b> 欄で、赤いジョブの <b>Details</b> を開く。</li><li>赤い行（error）を読む。</li><li>手元から見るなら <code>gh run view &lt;ID&gt; --log-failed</code></li></ol></div></div>
+</section>
+
+<!-- CI5 結果の見方とmergeの関門 -->
+<section class="slide">
+<span class="tag">CI 編 ⑤</span>
+<h2>結果の見方と、merge の関門</h2>
+<div class="cols"><div>
+<table>
+<tr><th>表示</th><th>意味</th><th>どうする</th></tr>
+<tr><td>🟡 pending</td><td>実行中・待機中</td><td>待つ</td></tr>
+<tr><td>✅ pass</td><td>合格</td><td>次へ進める</td></tr>
+<tr><td>❌ fail</td><td>不合格</td><td>ログを読んで直す</td></tr>
+<tr><td>➖ skipping</td><td>条件に合わず実行しなかった</td><td>多くは問題なし</td></tr>
+</table></div>
+<svg viewBox="0 0 400 230" role="img" aria-label="必須チェックが merge の関門になる図">
+<g text-anchor="middle" font-size="12.5">
+<rect class="f-card s-line" x="10" y="14" width="150" height="70" rx="12" stroke-width="2"/><text x="85" y="44" font-weight="700" class="t-fg">PR</text><text x="85" y="64" font-size="11" class="t-sub">test ✓　secret-scan ✓</text>
+<path d="M164 49 H206" stroke="var(--ok)" stroke-width="3" fill="none" marker-end="url(#mG)"/>
+<rect class="f-ok" x="212" y="14" width="178" height="70" rx="12"/><text x="301" y="44" font-weight="700" class="t-w">Merge ボタン 押せる</text><text x="301" y="64" font-size="11" class="t-w">（承認も揃えば）</text>
+<rect class="f-card s-line" x="10" y="120" width="150" height="70" rx="12" stroke-width="2"/><text x="85" y="150" font-weight="700" class="t-fg">PR</text><text x="85" y="170" font-size="11" class="t-ng" font-weight="700">test ✗</text>
+<path d="M164 155 H206" stroke="var(--ng)" stroke-width="3" fill="none" marker-end="url(#mR)"/>
+<rect class="f-bg s-ng" x="212" y="120" width="178" height="70" rx="12" stroke-width="2.5"/><text x="301" y="150" font-weight="700" class="t-ng">Merge ボタン 押せない</text><text x="301" y="170" font-size="11" class="t-sub">赤を直すまで止まる</text>
+</g></svg></div>
+<div class="box t">この「押せない」は、<b>ブランチ保護（ruleset）の「必須チェック」</b>で有効になります。まだ ruleset を入れていないので、いまは赤でも admin は merge できてしまいます。</div>
+</section>
+
+<!-- CI6 守れること -->
+<section class="slide">
+<span class="tag">CI 編 ⑥</span>
+<h2>CI で守れること、守れないこと</h2>
+<svg viewBox="0 0 780 230" role="img" aria-label="CI が守れる範囲と人が見る範囲">
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-ok" x="10" y="14" width="370" height="200" rx="14" stroke-width="3"/><text x="195" y="44" font-size="15" font-weight="700" class="t-ok">🤖 CI が得意</text>
+<g class="t-fg" font-size="13"><text x="195" y="78">✓ テストが壊れていないか</text><text x="195" y="104">✓ 鍵・トークンの混入</text><text x="195" y="130">✓ 書式・型・ビルドの失敗</text><text x="195" y="156">✓ 毎回同じ手順で確認</text></g><text x="195" y="192" font-size="11" class="t-sub">決まった基準で「速く・漏れなく」</text>
+<rect class="f-card s-ng" x="400" y="14" width="370" height="200" rx="14" stroke-width="3"/><text x="585" y="44" font-size="15" font-weight="700" class="t-ng">👀 人が見る必要がある</text>
+<g class="t-fg" font-size="13"><text x="585" y="78">✓ 依頼の意図と合っているか</text><text x="585" y="104">✓ 設計・命名・保守しやすさ</text><text x="585" y="130">✓ テスト自体が十分か</text><text x="585" y="156">✓ CI の設定を弱めていないか</text></g><text x="585" y="192" font-size="11" class="t-sub">基準に書けない「判断」</text>
+</g></svg>
+<ul><li>CI が緑でも、<b>「正しい」とは限りません</b>。最終承認は人、という分担です。</li>
+<li>CI の設定ファイル（<code>.github/</code>）は、CODEOWNERS で admin の承認を必須にして、<b>テストを消して緑にする</b>抜け道を防ぎます。</li>
+<li>費用: public リポジトリの Actions は無料です。private や会社利用では、無料枠と超過課金を<b>契約前に公式で確認</b>してください。</li></ul>
+</section>
+
+<!-- CI7 練習 -->
+<section class="slide">
+<span class="tag">CI 編 ⑦</span>
+<h2>練習：わざと CI を赤くして、直す</h2>
+<svg viewBox="0 0 780 200" role="img" aria-label="CI を赤くして直す練習の流れ">
+<g text-anchor="middle" font-size="12.5">
+<g transform="translate(6,20)"><rect class="f-card s-line" width="140" height="130" rx="12" stroke-width="2"/><text x="70" y="36" font-size="22">🌿</text><text x="70" y="62" font-weight="700" class="t-fg">① ブランチ</text><text x="70" y="82" font-size="11" class="t-sub">練習用の枝を作る</text></g>
+<g transform="translate(160,20)"><rect class="f-card s-ng" width="140" height="130" rx="12" stroke-width="2"/><text x="70" y="36" font-size="22">💣</text><text x="70" y="62" font-weight="700" class="t-fg">② 壊す</text><text x="70" y="82" font-size="11" class="t-sub">テストの期待値を</text><text x="70" y="98" font-size="11" class="t-sub">わざと間違える</text></g>
+<g transform="translate(314,20)"><rect class="f-card s-ac" width="140" height="130" rx="12" stroke-width="2"/><text x="70" y="36" font-size="22">📨</text><text x="70" y="62" font-weight="700" class="t-fg">③ PR を出す</text><text x="70" y="82" font-size="11" class="t-sub">CI が動く</text></g>
+<g transform="translate(468,20)"><rect class="f-ng" width="140" height="130" rx="12"/><text x="70" y="36" font-size="22">❌</text><text x="70" y="62" font-weight="700" class="t-w">④ 赤を確認</text><text x="70" y="82" font-size="11" class="t-w">ログを読んで</text><text x="70" y="98" font-size="11" class="t-w">原因をつかむ</text></g>
+<g transform="translate(622,20)"><rect class="f-ok" width="152" height="130" rx="12"/><text x="76" y="36" font-size="22">✅</text><text x="76" y="62" font-weight="700" class="t-w">⑤ 直して緑に</text><text x="76" y="82" font-size="11" class="t-w">push し直すと</text><text x="76" y="98" font-size="11" class="t-w">自動で再検査</text></g>
+</g>
+<g stroke="var(--fg)" stroke-width="2.5" fill="none"><path d="M150 85 H156" marker-end="url(#mF)"/><path d="M304 85 H310" marker-end="url(#mF)"/><path d="M458 85 H464" marker-end="url(#mF)"/><path d="M612 85 H618" marker-end="url(#mF)"/></g>
+<text x="390" y="184" text-anchor="middle" font-size="12" class="t-sub">この練習の結果は docs/failure-drills.md の表と、docs/metrics.md に記録します。</text>
+</svg>
+<div class="box">ruleset を入れた後に行うと、「赤だと merge ボタンが押せない」ことまで確認できます。これは私が代行できる練習です。</div>
+</section>
+
 <!-- 12 CODEOWNERS -->
 <section class="slide">
 <span class="tag">場面5</span>

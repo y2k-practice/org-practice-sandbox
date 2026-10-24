@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>GitHub 練習環境セットアップ紙芝居</title>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--fg:#1f2430;--sub:#5b6472;--ac:#2563eb;--ok:#15803d;--ng:#b91c1c;--line:#d9dde4;--chip:#e6eeff;--okbg:#e4f5ea;--ngbg:#fdeaea;--term:#161b22;--termfg:#d6e2f0;--sky:#dbeafe;--skin:#f6c9a0;--warn:#b45309;--warnbg:#fff3df}
+:root[data-theme=dark]{--bg:#12151b;--card:#1b2029;--fg:#e8ebf1;--sub:#9aa4b2;--ac:#6b9bff;--ok:#4ade80;--ng:#f87171;--line:#2d3542;--chip:#222b3d;--okbg:#16301f;--ngbg:#3a1d1d;--term:#0b0e13;--termfg:#d6e2f0;--sky:#1e2a44;--skin:#d9a77c;--warn:#fbbf24;--warnbg:#3a2e12}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 "Yu Gothic UI","Meiryo",system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:16px;min-height:100vh;display:flex;flex-direction:column}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ac);transition:width .3s}
+.stage{flex:1;display:flex;align-items:center;padding:14px 0}
+.slide{display:none;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 30px}
+.slide.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.tag{display:inline-block;background:var(--chip);color:var(--ac);border-radius:99px;padding:2px 14px;font-size:13px;font-weight:700}
+h1{font-size:30px;margin:10px 0 4px}
+h2{font-size:24px;margin:8px 0 10px}
+p{margin:8px 0}
+.sub{color:var(--sub)}
+.who{display:inline-block;border-radius:6px;padding:1px 10px;font-size:13px;font-weight:700;margin-right:6px;vertical-align:middle}
+.me{background:var(--chip);color:var(--ac)}.ai{background:var(--okbg);color:var(--ok)}.warn{background:var(--ngbg);color:var(--ng)}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:center}
+@media(max-width:720px){.cols{grid-template-columns:1fr}.slide{padding:18px}}
+pre{background:var(--term);color:var(--termfg);border-radius:8px;padding:10px 14px;overflow-x:auto;font:14px/1.6 Consolas,monospace;margin:8px 0}
+code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 5px;font:14px Consolas,monospace}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+.box{border-left:4px solid var(--ac);background:var(--bg);padding:8px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+.box.w{border-color:var(--ng);background:var(--ngbg)}
+.box.t{border-color:var(--warn);background:var(--warnbg)}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+button{font:inherit;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:8px 20px;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+.cnt{color:var(--sub);font-size:14px}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif}
+.f-card{fill:var(--card)}.f-bg{fill:var(--bg)}.f-ac{fill:var(--ac)}.f-ok{fill:var(--ok)}.f-ng{fill:var(--ng)}.f-sky{fill:var(--sky)}.f-skin{fill:var(--skin)}.f-chip{fill:var(--chip)}.f-term{fill:var(--term)}.f-warn{fill:var(--warn)}.f-line{fill:var(--line)}
+.s-line{stroke:var(--line)}.s-ac{stroke:var(--ac)}.s-ok{stroke:var(--ok)}.s-ng{stroke:var(--ng)}.s-fg{stroke:var(--fg)}
+.t-fg{fill:var(--fg)}.t-sub{fill:var(--sub)}.t-w{fill:#fff}.t-ac{fill:var(--ac)}.t-ok{fill:var(--ok)}.t-ng{fill:var(--ng)}.t-term{fill:var(--termfg)}
+.bob{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@media(prefers-reduced-motion:reduce){.bob,.slide.on{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar"><i id="bar"></i></div>
+<div class="stage">
+
+<!-- 1 表紙 -->
+<section class="slide">
+<span class="tag">はじめに</span>
+<h1>GitHub 練習環境をつくろう</h1>
+<p class="sub">会社の AI 駆動開発を、自宅で先に練習する紙芝居です。</p>
+<svg viewBox="0 0 700 250" role="img" aria-label="人とロボットがリポジトリを囲む絵">
+<rect class="f-sky" x="0" y="0" width="700" height="250" rx="14"/>
+<circle cx="610" cy="48" r="26" fill="#fbbf24"/>
+<ellipse cx="140" cy="60" rx="50" ry="16" fill="#fff" opacity=".8"/><ellipse cx="170" cy="50" rx="34" ry="14" fill="#fff" opacity=".8"/>
+<rect x="0" y="205" width="700" height="45" fill="#86c98f" opacity=".6"/>
+<!-- person -->
+<g transform="translate(120,70)"><circle class="f-skin" cx="40" cy="30" r="28"/><path d="M14 22 q26 -34 52 0 q-26 -10 -52 0z" fill="#3b2f2f"/><circle cx="31" cy="32" r="3" fill="#222"/><circle cx="50" cy="32" r="3" fill="#222"/><path d="M32 44 q9 8 18 0" stroke="#222" fill="none" stroke-width="2.4" stroke-linecap="round"/><rect class="f-ac" x="12" y="58" width="56" height="70" rx="14"/><rect class="f-skin" x="-4" y="70" width="20" height="9" rx="4"/><rect class="f-skin" x="64" y="70" width="20" height="9" rx="4"/><text x="40" y="150" text-anchor="middle" font-size="14" font-weight="700" class="t-fg">あなた</text></g>
+<!-- robot -->
+<g transform="translate(470,60)" class="bob"><line x1="45" y1="-2" x2="45" y2="14" stroke="#888" stroke-width="3"/><circle cx="45" cy="-6" r="6" class="f-ng"/><rect x="10" y="14" width="70" height="56" rx="14" class="f-ok"/><circle cx="32" cy="40" r="8" fill="#fff"/><circle cx="58" cy="40" r="8" fill="#fff"/><circle cx="34" cy="41" r="4" fill="#222"/><circle cx="60" cy="41" r="4" fill="#222"/><rect x="26" y="74" width="38" height="52" rx="10" class="f-ok"/><rect x="2" y="78" width="22" height="9" rx="4" class="f-ok"/><rect x="66" y="78" width="22" height="9" rx="4" class="f-ok"/><text x="45" y="152" text-anchor="middle" font-size="14" font-weight="700" class="t-fg">Claude</text></g>
+<!-- repo box -->
+<g transform="translate(290,92)"><rect class="f-card s-ac" x="0" y="0" width="120" height="100" rx="12" stroke-width="3"/><rect class="f-ac" x="0" y="0" width="120" height="26" rx="12"/><rect class="f-ac" x="0" y="14" width="120" height="12"/><text x="60" y="19" text-anchor="middle" font-size="13" font-weight="700" class="t-w">repository</text><text x="60" y="52" text-anchor="middle" font-size="12" class="t-fg">AGENTS.md</text><text x="60" y="70" text-anchor="middle" font-size="12" class="t-fg">.claude/</text><text x="60" y="88" text-anchor="middle" font-size="12" class="t-fg">.github/</text></g>
+<path d="M205 150 H285" stroke="var(--ac)" stroke-width="3" stroke-dasharray="6 5"/><path d="M415 150 H465" stroke="var(--ok)" stroke-width="3" stroke-dasharray="6 5"/>
+</svg>
+<div class="box">所要時間の目安: 1〜2 時間。途中で止めても、続きから再開できます。</div>
+</section>
+
+<!-- 2 なぜ -->
+<section class="slide">
+<span class="tag">なぜやるの？</span>
+<h2>「自分の PC」から「リポジトリが正本」へ</h2>
+<svg viewBox="0 0 760 230" role="img" aria-label="個人運用から組織運用への移行図">
+<rect class="f-bg s-line" x="10" y="20" width="300" height="190" rx="14" stroke-width="2"/>
+<text x="160" y="48" text-anchor="middle" font-size="16" font-weight="700" class="t-fg">いまの自宅</text>
+<g><rect class="f-chip" x="34" y="66" width="120" height="44" rx="8"/><text x="94" y="94" text-anchor="middle" font-size="14" class="t-fg">~/.claude</text>
+<rect class="f-chip" x="166" y="66" width="120" height="44" rx="8"/><text x="226" y="94" text-anchor="middle" font-size="14" class="t-fg">~/.agents</text>
+<text x="160" y="140" text-anchor="middle" font-size="14" class="t-sub">自分だけが知っている設定</text>
+<text x="160" y="164" text-anchor="middle" font-size="14" class="t-sub">自分で判断・自分で確認</text>
+<text x="160" y="188" text-anchor="middle" font-size="22">🏠</text></g>
+<path d="M326 115 H424" stroke="var(--ac)" stroke-width="5"/><path d="M424 115 l-14 -11 v22z" class="f-ac" fill="var(--ac)"/>
+<text x="375" y="100" text-anchor="middle" font-size="13" class="t-ac" font-weight="700">練習</text>
+<rect class="f-bg s-ok" x="440" y="20" width="310" height="190" rx="14" stroke-width="2.5"/>
+<text x="595" y="48" text-anchor="middle" font-size="16" font-weight="700" class="t-ok">めざす姿（組織）</text>
+<rect class="f-card s-ok" x="470" y="62" width="250" height="52" rx="8" stroke-width="2"/><text x="595" y="85" text-anchor="middle" font-size="14" font-weight="700" class="t-fg">リポジトリが正本</text><text x="595" y="104" text-anchor="middle" font-size="12" class="t-sub">AGENTS.md / .claude / .github</text>
+<text x="595" y="140" text-anchor="middle" font-size="14" class="t-sub">誰が clone しても同じ環境</text>
+<text x="595" y="162" text-anchor="middle" font-size="14" class="t-sub">仕組みで止める（deny・hook・保護）</text>
+<text x="595" y="190" text-anchor="middle" font-size="22">🏢</text>
+</svg>
+<ul><li>設定がリポジトリにあれば、新メンバーも同じ状態で始められます。</li>
+<li>最終承認は人。AI は作業者であって、承認者にはなりません。</li></ul>
+</section>
+
+<!-- 3 全体マップ -->
+<section class="slide">
+<span class="tag">全体マップ</span>
+<h2>6つの場面で進みます</h2>
+<svg viewBox="0 0 800 270" role="img" aria-label="6場面の道のり">
+<path d="M40 150 C140 40 200 40 260 150 S380 260 440 150 S560 40 620 150 S740 250 770 140" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
+<g font-size="13" text-anchor="middle">
+<circle cx="70" cy="128" r="22" class="f-ac"/><text x="70" y="134" class="t-w" font-weight="700" font-size="18">1</text><text x="70" y="172" class="t-fg">gh 導入</text><text x="70" y="190" class="t-ac" font-weight="700">あなた</text>
+<circle cx="205" cy="62" r="22" class="f-ac"/><text x="205" y="68" class="t-w" font-weight="700" font-size="18">2</text><text x="205" y="26" class="t-fg">Org 作成</text><text x="205" y="108" class="t-ac" font-weight="700">あなた</text>
+<circle cx="335" cy="196" r="22" class="f-ac"/><text x="335" y="202" class="t-w" font-weight="700" font-size="18">3</text><text x="335" y="244" class="t-fg">役割アカウント</text><text x="335" y="160" class="t-ac" font-weight="700">あなた</text>
+<circle cx="470" cy="122" r="22" class="f-ok"/><text x="470" y="128" class="t-w" font-weight="700" font-size="18">4</text><text x="470" y="84" class="t-fg">repo を push</text><text x="470" y="166" class="t-ok" font-weight="700">Claude</text>
+<circle cx="600" cy="62" r="22" class="f-ok"/><text x="600" y="68" class="t-w" font-weight="700" font-size="18">5</text><text x="600" y="26" class="t-fg">CODEOWNERS</text><text x="600" y="108" class="t-ok" font-weight="700">Claude</text>
+<circle cx="730" cy="196" r="22" class="f-warn"/><text x="730" y="202" class="t-w" font-weight="700" font-size="18">6</text><text x="730" y="244" class="t-fg">保護ルール</text><text x="730" y="160" class="t-ac" font-weight="700">一緒に</text>
+</g></svg>
+<p class="sub">アカウント作成・規約への同意・パスワードやトークンの入力は、Claude は代行しません。</p>
+</section>
+
+<!-- 4 登場人物 -->
+<section class="slide">
+<span class="tag">登場人物</span>
+<h2>2つのアカウントで、3つの役を練習します</h2>
+<svg viewBox="0 0 760 210" role="img" aria-label="admin・dev・reviewer の3役">
+<g text-anchor="middle" font-size="14">
+<g transform="translate(40,20)"><rect class="f-card s-ac" width="200" height="170" rx="14" stroke-width="2.5"/><circle class="f-skin" cx="100" cy="52" r="26"/><path d="M76 46 q24 -30 48 0z" fill="#3b2f2f"/><rect class="f-ac" x="72" y="80" width="56" height="40" rx="12"/><text x="100" y="142" font-weight="700" class="t-fg">admin ＋ dev（あなた）</text><text x="100" y="160" font-size="12" class="t-sub">fullion-y2k・設定も PR も担当</text></g>
+<g transform="translate(280,20)"><rect class="f-card s-ok" width="200" height="170" rx="14" stroke-width="2.5"/><circle class="f-skin" cx="100" cy="52" r="26"/><path d="M76 44 q24 -26 48 0z" fill="#7c4a1e"/><rect class="f-ok" x="72" y="80" width="56" height="40" rx="12"/><text x="100" y="142" font-weight="700" class="t-fg">Claude（作業の手足）</text><text x="100" y="160" font-size="12" class="t-sub">アカウント不要・あなたの権限で動く</text></g>
+<g transform="translate(520,20)"><rect class="f-card s-ng" width="200" height="170" rx="14" stroke-width="2.5"/><circle class="f-skin" cx="100" cy="52" r="26"/><path d="M74 48 q26 -34 52 0z" fill="#111"/><rect x="80" y="44" width="16" height="12" rx="3" fill="none" stroke="#333" stroke-width="2"/><rect x="104" y="44" width="16" height="12" rx="3" fill="none" stroke="#333" stroke-width="2"/><rect class="f-ng" x="72" y="80" width="56" height="40" rx="12"/><text x="100" y="142" font-weight="700" class="t-fg">reviewer（別の人）</text><text x="100" y="160" font-size="12" class="t-sub">PR を本気で読んで承認する</text></g>
+</g></svg>
+<div class="box t">GitHub では PR の作成者は自分の PR を承認できません。2アカウントでも「書く人」と「承認する人」は分かれるので、練習として成立します。足りないのは、dev と admin を分ける練習だけです。</div>
+</section>
+
+<!-- 5 gh 導入 -->
+<section class="slide">
+<span class="tag">場面1</span>
+<h2>gh（GitHub CLI）を入れる <span class="who me">あなた</span></h2>
+<div class="cols"><div>
+<ol><li>スタートメニューから <b>PowerShell</b> を開く。</li>
+<li>次のコマンドを貼り付けて Enter。</li>
+<li>「インストールが完了しました」と出たら終わり。</li></ol>
+<pre>winget install --id GitHub.cli --exact</pre>
+<p class="sub">確認済み: winget で GitHub CLI 2.103.2 が入手できます。</p>
+<div class="box t">ダウンロードを伴うため、Claude は実行せず、あなたが実行します。</div>
+</div>
+<svg viewBox="0 0 400 250" role="img" aria-label="PowerShell の画面イメージ">
+<rect class="f-term" x="6" y="6" width="388" height="238" rx="10"/><rect x="6" y="6" width="388" height="28" rx="10" fill="#2a313c"/><circle cx="24" cy="20" r="5" fill="#ff5f56"/><circle cx="42" cy="20" r="5" fill="#ffbd2e"/><circle cx="60" cy="20" r="5" fill="#27c93f"/><text x="80" y="25" font-size="12" fill="#9aa4b2">PowerShell</text>
+<g font-family="Consolas,monospace" font-size="13" class="t-term"><text x="20" y="62" class="t-term">PS&gt; winget install --id GitHub.cli</text><text x="20" y="82" class="t-term">           --exact</text><text x="20" y="112" fill="#8fb4ff">見つかりました GitHub CLI [GitHub.cli]</text><text x="20" y="134" fill="#8fb4ff">ダウンロード中 ████████░░ 80%</text><text x="20" y="162" fill="#4ade80">インストールが完了しました</text><text x="20" y="196" class="t-term">PS&gt; <tspan fill="#d6e2f0">▌</tspan></text></g></svg>
+</div>
+</section>
+
+<!-- 6 ログイン -->
+<section class="slide">
+<span class="tag">場面1</span>
+<h2>ターミナルを開き直して、ログイン <span class="who me">あなた</span></h2>
+<svg viewBox="0 0 780 190" role="img" aria-label="gh auth login の流れ">
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-ac" x="10" y="30" width="160" height="110" rx="12" stroke-width="2"/><text x="90" y="62" font-weight="700" class="t-fg">① 新しい</text><text x="90" y="82" font-weight="700" class="t-fg">PowerShell</text><text x="90" y="112" font-size="12" class="t-sub">gh auth login</text>
+<path d="M176 85 H230" stroke="var(--ac)" stroke-width="3"/><path d="M230 85 l-10 -8 v16z" fill="var(--ac)"/>
+<rect class="f-card s-ac" x="236" y="30" width="160" height="110" rx="12" stroke-width="2"/><text x="316" y="62" font-weight="700" class="t-fg">② 質問に答える</text><text x="316" y="86" font-size="12" class="t-sub">GitHub.com</text><text x="316" y="104" font-size="12" class="t-sub">HTTPS</text><text x="316" y="122" font-size="12" class="t-sub">web browser</text>
+<path d="M402 85 H456" stroke="var(--ac)" stroke-width="3"/><path d="M456 85 l-10 -8 v16z" fill="var(--ac)"/>
+<rect class="f-card s-ac" x="462" y="30" width="150" height="110" rx="12" stroke-width="2"/><text x="537" y="62" font-weight="700" class="t-fg">③ コードを入力</text><rect class="f-chip" x="487" y="76" width="100" height="32" rx="6"/><text x="537" y="98" font-size="17" font-weight="700" class="t-ac" font-family="Consolas,monospace">ABCD-1234</text><text x="537" y="128" font-size="11" class="t-sub">ブラウザの画面へ</text>
+<path d="M618 85 H660" stroke="var(--ok)" stroke-width="3"/><path d="M660 85 l-10 -8 v16z" fill="var(--ok)"/>
+<circle cx="715" cy="85" r="42" class="f-ok"/><path d="M695 86 l14 14 l26 -30" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="715" y="152" font-weight="700" class="t-ok">ログイン完了</text>
+</g></svg>
+<ul><li>表示される文言が少し違っても、<b>GitHub.com → HTTPS → ブラウザ</b>の選択肢を選べば大丈夫です。</li>
+<li>ブラウザで GitHub にログイン済みなら、コードを入れて承認するだけです。</li></ul>
+<div class="box w">認証コードの入力と承認は、あなた自身の操作です。トークンやパスワードをチャットに貼らないでください。</div>
+</section>
+
+<!-- 7 確認 -->
+<section class="slide">
+<span class="tag">場面1の確認</span>
+<h2>入ったかどうかを確かめる</h2>
+<div class="cols"><div>
+<pre>gh --version
+gh auth status</pre>
+<p>2つ目で、<b>Logged in to github.com account …</b> と出ればOKです。</p>
+<table><tr><th>出た表示</th><th>対処</th></tr>
+<tr><td>gh が見つからない</td><td>ターミナルを閉じて開き直す</td></tr>
+<tr><td>not logged in</td><td><code>gh auth login</code> をやり直す</td></tr></table>
+</div>
+<svg viewBox="0 0 400 220" role="img" aria-label="確認コマンドの結果イメージ">
+<rect class="f-term" x="6" y="6" width="388" height="208" rx="10"/><g font-family="Consolas,monospace" font-size="13"><text x="20" y="40" class="t-term">PS&gt; gh --version</text><text x="20" y="62" fill="#8fb4ff">gh version 2.103.2</text><text x="20" y="96" class="t-term">PS&gt; gh auth status</text><text x="20" y="120" fill="#4ade80">✓ Logged in to github.com</text><text x="20" y="142" fill="#4ade80">  account fullion-y2k</text><text x="20" y="176" fill="#9aa4b2"># Git operations protocol: https</text></g></svg>
+</div>
+</section>
+
+<!-- 8 Org フォーム -->
+<section class="slide">
+<span class="tag">場面2</span>
+<h2>Organization を作る <span class="who me">あなた</span></h2>
+<div class="cols"><div>
+<p>次の URL を開きます（画面は実際に確認済み）。</p>
+<pre>https://github.com/account/organizations/new?plan=free</pre>
+<table>
+<tr><th>項目</th><th>入力</th></tr>
+<tr><td>Organization name</td><td>例: <code>y2k-practice</code></td></tr>
+<tr><td>Contact email</td><td>連絡用メール</td></tr>
+<tr><td>belongs to</td><td><b>My personal account</b></td></tr>
+<tr><td>Terms of Service</td><td>読んで同意にチェック</td></tr>
+</table></div>
+<svg viewBox="0 0 400 300" role="img" aria-label="Organization 作成フォームのイメージ">
+<rect class="f-card s-line" x="6" y="6" width="388" height="288" rx="12" stroke-width="2"/><rect class="f-bg" x="7" y="7" width="386" height="34" rx="11"/><text x="22" y="29" font-size="14" font-weight="700" class="t-fg">Set up your organization</text>
+<g font-size="12"><text x="22" y="64" class="t-sub">Organization name *</text><rect class="f-bg s-ac" x="22" y="70" width="356" height="28" rx="6" stroke-width="2"/><text x="32" y="89" class="t-fg">y2k-practice</text>
+<text x="22" y="122" class="t-sub">Contact email *</text><rect class="f-bg s-line" x="22" y="128" width="356" height="28" rx="6" stroke-width="1.5"/><text x="32" y="147" class="t-sub">you@example.com</text>
+<text x="22" y="180" class="t-sub">This organization belongs to:</text>
+<circle cx="32" cy="198" r="7" fill="none" class="s-ac" stroke-width="2"/><circle cx="32" cy="198" r="3.5" class="f-ac"/><text x="48" y="202" class="t-fg">My personal account</text>
+<circle cx="32" cy="220" r="7" fill="none" class="s-line" stroke-width="2"/><text x="48" y="224" class="t-sub">A business or institution</text>
+<rect class="s-ac f-card" x="24" y="238" width="14" height="14" rx="3" stroke-width="2"/><path d="M27 245 l3 3 l6 -7" stroke="var(--ac)" stroke-width="2.2" fill="none"/><text x="46" y="250" class="t-fg">I accept the Terms of Service</text>
+<rect class="f-ac" x="300" y="262" width="78" height="26" rx="6"/><text x="339" y="279" text-anchor="middle" class="t-w" font-weight="700">Next</text></g></svg>
+</div>
+<div class="box t">入力と同意は、あなた自身の操作です。Next の後に出る招待画面は、いったんスキップで構いません。</div>
+</section>
+
+<!-- 9 Org の決め方 -->
+<section class="slide">
+<span class="tag">場面2のコツ</span>
+<h2>名前と料金プランの考え方</h2>
+<div class="cols"><div>
+<ul><li><b>名前</b>: 英数字とハイフン。後から変えられますが、URL が変わるので最初に決めておく。</li>
+<li><b>プラン</b>: Free で十分。SSO や監査ログなど Enterprise 限定機能は、本番で差分を確認します。</li>
+<li><b>連絡先メール</b>: 個人用で問題なし。</li>
+<li>作り終えたら、Org のページが <code>github.com/&lt;org名&gt;</code> で開くことを確認。</li></ul>
+<div class="box">Enterprise の機能は自宅では再現できません。ここでは「型」を覚えることが目的です。</div></div>
+<svg viewBox="0 0 400 230" role="img" aria-label="Free と Enterprise の比較">
+<g text-anchor="middle"><rect class="f-card s-ok" x="10" y="14" width="180" height="200" rx="14" stroke-width="3"/><text x="100" y="44" font-size="17" font-weight="700" class="t-ok">Free（今回）</text><g font-size="13" class="t-fg"><text x="100" y="80">✓ リポジトリ</text><text x="100" y="104">✓ Pull Request</text><text x="100" y="128">✓ Actions（無料枠）</text><text x="100" y="152">✓ ブランチ保護(*)</text><text x="100" y="188" font-size="11" class="t-sub">(*)private は制限あり</text></g>
+<rect class="f-bg s-line" x="210" y="14" width="180" height="200" rx="14" stroke-width="2" stroke-dasharray="6 5"/><text x="300" y="44" font-size="17" font-weight="700" class="t-sub">Enterprise（会社）</text><g font-size="13" class="t-sub"><text x="300" y="80">SSO（Entra ID）</text><text x="300" y="104">監査ログ</text><text x="300" y="128">組織全体の統制</text><text x="300" y="152">席の一括管理</text><text x="300" y="188" font-size="11">本番で確認する</text></g></g></svg>
+</div>
+</section>
+
+<!-- 10 役割アカウント -->
+<section class="slide">
+<span class="tag">場面3</span>
+<h2>reviewer を招待する <span class="who me">あなた</span></h2>
+<svg viewBox="0 0 760 220" role="img" aria-label="Org に3人を招待する図">
+<g text-anchor="middle" font-size="13">
+<rect class="f-sky" x="270" y="10" width="220" height="82" rx="40"/><text x="380" y="46" font-size="17" font-weight="700" class="t-fg">y2k-practice</text><text x="380" y="68" class="t-sub">Organization</text>
+<g transform="translate(60,128)"><circle class="f-ac" cx="40" cy="22" r="22"/><text x="40" y="28" class="t-w" font-weight="700">自</text><text x="40" y="62" class="t-fg" font-weight="700">fullion-y2k</text><text x="40" y="80" font-size="12" class="t-ac">Owner（admin）</text></g>
+<g transform="translate(340,128)"><circle class="f-ok" cx="40" cy="22" r="22"/><text x="40" y="28" class="t-w" font-weight="700">AI</text><text x="40" y="62" class="t-fg" font-weight="700">Claude</text><text x="40" y="80" font-size="12" class="t-ok">招待不要</text></g>
+<g transform="translate(600,128)"><circle class="f-ng" cx="40" cy="22" r="22"/><text x="40" y="28" class="t-w" font-weight="700">R</text><text x="40" y="62" class="t-fg" font-weight="700">reviewer アカウント</text><text x="40" y="80" font-size="12" class="t-ng">Write</text></g>
+<path d="M100 128 Q200 90 290 92" fill="none" class="s-ac" stroke-width="2.5"/><path d="M380 128 V96" class="s-ok" stroke-width="2.5"/><path d="M640 128 Q540 90 470 92" fill="none" class="s-ng" stroke-width="2.5"/></g></svg>
+<p>Org のページ → <b>People</b> から <b>Invite member</b> でユーザー名かメールを入れて招待します（画面の文言は変わることがあります）。</p>
+<div class="box w">GitHub は、一人が複数の無料アカウントを持つことを規約上は原則禁止しています。reviewer は家族や知人など、別の人に頼むのが安全です。自分で2つ目を作る場合は、公式の規約を確認してから判断してください（Claude は作成を代行しません）。</div>
+</section>
+
+<!-- 11 push -->
+<section class="slide">
+<span class="tag">場面4</span>
+<h2>リポジトリを Org に置く <span class="who ai">Claude</span></h2>
+<svg viewBox="0 0 780 200" role="img" aria-label="ローカルから Org へ push する図">
+<g text-anchor="middle" font-size="13">
+<rect class="f-card s-line" x="20" y="30" width="230" height="130" rx="14" stroke-width="2"/><text x="135" y="58" font-weight="700" class="t-fg">あなたの PC</text><text x="135" y="84" font-size="12" class="t-sub">org-practice-sandbox</text><rect class="f-chip" x="55" y="98" width="160" height="38" rx="8"/><text x="135" y="122" font-size="12" class="t-ac">コミット済み(3ec68d4)</text>
+<path d="M258 95 H520" class="s-ok" stroke-width="4" stroke-dasharray="9 7" fill="none"/><path d="M528 95 l-15 -10 v20z" class="f-ok"/>
+<text x="390" y="82" font-weight="700" class="t-ok">gh repo create … --push</text>
+<ellipse cx="640" cy="60" rx="100" ry="30" class="f-sky"/><ellipse cx="600" cy="48" rx="60" ry="24" class="f-sky"/>
+<rect class="f-card s-ok" x="540" y="62" width="200" height="98" rx="14" stroke-width="2.5"/><text x="640" y="90" font-weight="700" class="t-fg">GitHub</text><text x="640" y="110" font-size="12" class="t-sub">y2k-practice/</text><text x="640" y="130" font-size="13" font-weight="700" class="t-ok">org-practice-sandbox</text></g></svg>
+<div class="cols"><div><p><b>push 前の安全確認</b>（Claude が実施）</p>
+<ul><li>秘密情報が履歴に無いか（gitleaks 相当の確認）</li><li>.env などが追跡対象外か</li><li>公開してよい内容か</li></ul></div>
+<div class="box t">最初は <b>public</b> が無難です。無料 Org の private ではブランチ保護の一部が使えない場合があります。公開は外部への発信なので、実行前にあなたの「はい」を待ちます。</div></div>
+</section>
+
+<!-- 12 CODEOWNERS -->
+<section class="slide">
+<span class="tag">場面5</span>
+<h2>CODEOWNERS を実アカウントに <span class="who ai">Claude</span></h2>
+<div class="cols"><div>
+<p>承認者の名簿です。2アカウントでは、自分の PR を自分で承認できないため、全パスの承認者を reviewer にします。</p>
+<table><tr><th>書いてある名前</th><th>置換先</th></tr>
+<tr><td><code>@REVIEWER_ACCOUNT</code></td><td>reviewer のアカウント</td></tr>
+<tr><td><code>@ADMIN_ACCOUNT</code></td><td>reviewer のアカウント（同じ）</td></tr></table>
+<p>この変更自体を、<b>ブランチ → PR → レビュー → マージ</b>で行い、最初の練習題材にします。</p></div>
+<svg viewBox="0 0 400 230" role="img" aria-label="CODEOWNERS の中身">
+<rect class="f-term" x="6" y="6" width="388" height="218" rx="10"/><g font-family="Consolas,monospace" font-size="12.5"><text x="18" y="34" fill="#9aa4b2"># .github/CODEOWNERS</text>
+<text x="18" y="62" class="t-term">*          </text><text x="110" y="62" fill="#fbbf24">@REVIEWER_ACCOUNT</text><text x="330" y="62" fill="#4ade80">→</text>
+<text x="18" y="90" class="t-term">/.claude/  </text><text x="110" y="90" fill="#fbbf24">@ADMIN_ACCOUNT</text><text x="330" y="90" fill="#4ade80">→</text>
+<text x="18" y="118" class="t-term">/.github/  </text><text x="110" y="118" fill="#fbbf24">@ADMIN_ACCOUNT</text><text x="330" y="118" fill="#4ade80">→</text>
+<text x="18" y="146" class="t-term">/AGENTS.md </text><text x="110" y="146" fill="#fbbf24">@ADMIN_ACCOUNT</text><text x="330" y="146" fill="#4ade80">→</text>
+<text x="18" y="190" fill="#9aa4b2">黄色の名前が、実名に置き換わります</text></g></svg></div>
+</section>
+
+<!-- 13 ruleset -->
+<section class="slide">
+<span class="tag">場面6</span>
+<h2>main に4つの鍵をかける <span class="who me">あなた</span><span class="who ai">一緒に</span></h2>
+<svg viewBox="0 0 780 210" role="img" aria-label="main への門と4つの鍵">
+<g text-anchor="middle" font-size="12.5">
+<rect class="f-bg s-line" x="10" y="40" width="130" height="120" rx="12" stroke-width="2"/><text x="75" y="80" font-weight="700" class="t-fg">作業ブランチ</text><text x="75" y="104" class="t-sub">PR を出す</text><text x="75" y="130" font-size="22">🧑‍💻</text>
+<path d="M146 100 H228" stroke="var(--ac)" stroke-width="3"/>
+<g transform="translate(232,20)"><rect class="f-card s-ng" x="0" y="0" width="90" height="160" rx="10" stroke-width="2.5"/><text x="45" y="40" font-size="26">🔒</text><text x="45" y="76" font-weight="700" class="t-fg">PR 必須</text><text x="45" y="96" font-size="11" class="t-sub">直接 push 禁止</text></g>
+<g transform="translate(334,20)"><rect class="f-card s-ng" x="0" y="0" width="90" height="160" rx="10" stroke-width="2.5"/><text x="45" y="40" font-size="26">🔒</text><text x="45" y="76" font-weight="700" class="t-fg">CI 合格</text><text x="45" y="96" font-size="11" class="t-sub">test / secret-scan</text></g>
+<g transform="translate(436,20)"><rect class="f-card s-ng" x="0" y="0" width="90" height="160" rx="10" stroke-width="2.5"/><text x="45" y="40" font-size="26">🔒</text><text x="45" y="76" font-weight="700" class="t-fg">承認 1件</text><text x="45" y="96" font-size="11" class="t-sub">CODEOWNERS</text></g>
+<g transform="translate(538,20)"><rect class="f-card s-ng" x="0" y="0" width="90" height="160" rx="10" stroke-width="2.5"/><text x="45" y="40" font-size="26">🔒</text><text x="45" y="76" font-weight="700" class="t-fg">最後は別人</text><text x="45" y="96" font-size="11" class="t-sub">last push 承認</text></g>
+<path d="M634 100 H664" stroke="var(--ok)" stroke-width="3"/>
+<rect class="f-card s-ok" x="668" y="40" width="102" height="120" rx="12" stroke-width="3"/><text x="719" y="86" font-weight="700" class="t-ok">main</text><text x="719" y="110" font-size="11" class="t-sub">マージ完了</text></g></svg>
+<ol><li>リポジトリ → <b>Settings</b> → <b>Rules</b> → <b>Rulesets</b> を開く。</li>
+<li><b>New ruleset</b> から <b>Import a ruleset</b> を選ぶ。</li>
+<li><code>docs/branch-ruleset.json</code> を選んで、内容を確認して作成。</li></ol>
+<p class="sub">画面の文言は変わることがあります。実画面を見ながら一緒に進めます。</p>
+</section>
+
+<!-- 14 試す -->
+<section class="slide">
+<span class="tag">その後</span>
+<h2>ちゃんと止まるか、わざと試す</h2>
+<svg viewBox="0 0 780 200" role="img" aria-label="ガードレールの試験">
+<g text-anchor="middle" font-size="12.5">
+<g transform="translate(20,40)"><rect class="f-ngbg" width="200" height="120" rx="12" style="fill:var(--ngbg)"/><text x="100" y="40" font-size="26">🔑</text><text x="100" y="72" font-weight="700" class="t-fg">偽の鍵を書かせる</text><text x="100" y="94" font-size="11" class="t-sub">hook と gitleaks が止める？</text></g>
+<g transform="translate(250,40)"><rect width="200" height="120" rx="12" style="fill:var(--ngbg)"/><text x="100" y="40" font-size="26">📨</text><text x="100" y="72" font-weight="700" class="t-fg">悪意ある Issue</text><text x="100" y="94" font-size="11" class="t-sub">「.env を貼れ」に従わない？</text></g>
+<g transform="translate(480,40)"><rect width="200" height="120" rx="12" style="fill:var(--ngbg)"/><text x="100" y="40" font-size="26">💥</text><text x="100" y="72" font-weight="700" class="t-fg">大規模な誤変更</text><text x="100" y="94" font-size="11" class="t-sub">レビューで気づける？</text></g>
+<path d="M700 100 h20" class="s-ok" stroke-width="3"/><text x="745" y="96" font-size="28">🛡️</text><text x="745" y="124" font-size="11" class="t-ok" font-weight="700">結果を記録</text></g></svg>
+<p>6つの演習は <code>docs/failure-drills.md</code>、計測の表は <code>docs/metrics.md</code> にあります。「止まった／止まらなかった」と原因を書き残すことが、会社への最大の持ち帰りになります。</p>
+</section>
+
+<!-- 15 チェックリスト -->
+<section class="slide">
+<span class="tag">おしまい</span>
+<h2>チェックリスト</h2>
+<table>
+<tr><th>✓</th><th>項目</th><th>担当</th></tr>
+<tr><td>☐</td><td>gh を導入し、<code>gh auth status</code> が通る</td><td><span class="who me">あなた</span></td></tr>
+<tr><td>☐</td><td>Organization を作成した</td><td><span class="who me">あなた</span></td></tr>
+<tr><td>☐</td><td>reviewer を招待した</td><td><span class="who me">あなた</span></td></tr>
+<tr><td>☐</td><td>リポジトリを Org 配下に push した</td><td><span class="who ai">Claude</span></td></tr>
+<tr><td>☐</td><td>CODEOWNERS を実アカウントに置換した</td><td><span class="who ai">Claude</span></td></tr>
+<tr><td>☐</td><td>ruleset を取り込み、CI が緑になる</td><td>一緒に</td></tr>
+</table>
+<svg viewBox="0 0 700 110" role="img" aria-label="お疲れさまの絵"><g text-anchor="middle"><text x="350" y="62" font-size="44">🎉</text><text x="350" y="98" font-size="14" class="t-sub">できた項目から、チャットで教えてください。次の場面へ進みます。</text></g></svg>
+</section>
+
+</div>
+<div class="nav">
+<button id="prev">← 前へ</button>
+<span class="cnt" id="cnt"></span>
+<button id="theme" style="background:var(--sub)">表示切替</button>
+<button id="next">次へ →</button>
+</div>
+</div>
+<script>
+(function(){
+var s=[].slice.call(document.querySelectorAll('.slide')),i=0,r=document.documentElement;
+try{i=Math.min(s.length-1,Math.max(0,+(localStorage.getItem('kami')||0)));if(localStorage.getItem('kami-theme')==='dark')r.setAttribute('data-theme','dark')}catch(e){}
+function show(n){
+i=Math.min(s.length-1,Math.max(0,n));
+s.forEach(function(x,k){x.classList.toggle('on',k===i)});
+document.getElementById('bar').style.width=((i+1)/s.length*100)+'%';
+document.getElementById('cnt').textContent=(i+1)+' / '+s.length;
+document.getElementById('prev').disabled=i===0;
+document.getElementById('next').disabled=i===s.length-1;
+try{localStorage.setItem('kami',i)}catch(e){}
+}
+document.getElementById('prev').onclick=function(){show(i-1)};
+document.getElementById('next').onclick=function(){show(i+1)};
+document.getElementById('theme').onclick=function(){var d=r.getAttribute('data-theme')==='dark';if(d)r.removeAttribute('data-theme');else r.setAttribute('data-theme','dark');try{localStorage.setItem('kami-theme',d?'light':'dark')}catch(e){}};
+document.addEventListener('keydown',function(e){
+if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();show(i+1)}
+if(e.key==='ArrowLeft')show(i-1);
+});
+show(i);
+})();
+</script>
+</body>
+</html>
